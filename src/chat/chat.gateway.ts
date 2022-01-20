@@ -1,4 +1,12 @@
-import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  ConnectedSocket,
+  MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server } from 'socket.io';
 
 const randomData = {
@@ -28,7 +36,6 @@ const randomData = {
   ],
 };
 
-const users = [];
 const room = {};
 
 @WebSocketGateway()
@@ -52,14 +59,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleConnection(client: any, ...args: any[]) {
     room[client.id] = this.randomUser(client.id);
+    this.server.emit(
+      'connectMessage',
+      `User ${room[client.id].name} has connected.`,
+    );
     this.server.emit('userData', room[client.id]);
-    this.server.emit('connectMessage', `User ${room[client.id].name} has connected.`)
     console.log(room);
   }
 
   handleDisconnect(client: any) {
-    this.server.emit('disconnectMessage', `User ${room[client.id].name} has disconnected.`);
-    delete room[client.id]
+    this.server.emit(
+      'disconnectMessage',
+      `User ${room[client.id].name} has disconnected.`,
+    );
+    delete room[client.id];
     console.log(room);
   }
 
@@ -73,4 +86,4 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit('msg', newMessage);
     console.log(newMessage);
   }
-}
+};
