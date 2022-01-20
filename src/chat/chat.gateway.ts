@@ -41,12 +41,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   };
 
   formatMessage = (data, clientID) => {
-    const message = data;
+    const text = data;
     const msgID = new Date().getTime();
     const time = new Date();
     const author = room[clientID].name;
     const avatar = room[clientID].avatar;
-    const newMessage = { message, time, msgID, clientID, author, avatar };
+    const newMessage = { text, time, msgID, clientID, author, avatar };
     return newMessage;
   };
 
@@ -71,5 +71,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   listenMSG(@MessageBody() data: string, @ConnectedSocket() client: any) {
     const newMessage = this.formatMessage(data, client.id);
     this.server.emit('msg', newMessage);
+    console.log(newMessage);
   }
 }
